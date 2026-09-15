@@ -802,6 +802,74 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &628809732
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 628809735}
+  - component: {fileID: 628809733}
+  - component: {fileID: 628809734}
+  m_Layer: 0
+  m_Name: Network
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &628809733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628809732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a36574216aa824bbc248f69ebea621, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fitts.Net.M2Link
+  serverIp: 169.254.105.2
+  serverPort: 2048
+  connectOnStart: 1
+  reconnectInterval: 2
+  pingInterval: 1
+  connected: 0
+  handshakeDone: 0
+  roundTripMs: 0
+  corruptFrames: 0
+  measuredStreamHz: 0
+--- !u!114 &628809734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628809732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228402462e608be49bda18e875fca70e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fitts.Experiment.DisplayLogger
+  logEveryFrame: 0
+--- !u!4 &628809735
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 628809732}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.45076, y: 0.14861, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &765429910
 GameObject:
   m_ObjectHideFlags: 0
@@ -1244,7 +1312,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CursorController
   mainCamera: {fileID: 765429912}
-  useMouse: 1
+  useMouse: 0
+  externalControl: 1
   minX: -0.4
   maxX: 0.4
   minY: 0
@@ -1319,6 +1388,65 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.01, y: 0.01, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1246467732
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1246467734}
+  - component: {fileID: 1246467733}
+  m_Layer: 0
+  m_Name: Remote Control
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1246467733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1246467732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd3fa84ff8afbd4428ae2ad2a8fb978d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fitts.Experiment.RemoteExperimentController
+  link: {fileID: 628809733}
+  cursor: {fileID: 1241208992}
+  target: {fileID: 531230394}
+  ui: {fileID: 1563033198}
+  originMarker: {fileID: 1966043352}
+  dwellRing: {fileID: 531230397}
+  frame:
+    robotOrigin: {x: 0.4, y: 0.2}
+    taskDirection: -1
+    sceneOrigin: {x: 0, y: 0}
+    sceneAxisSign: -1
+    displayGain: 1
+  displayLogger: {fileID: 628809734}
+  goKey: 32
+  abortKey: 27
+--- !u!4 &1246467734
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1246467732}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.45076, y: 0.14861, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1691,6 +1819,7 @@ GameObject:
   - component: {fileID: 2006011338}
   - component: {fileID: 2006011336}
   - component: {fileID: 2006011337}
+  - component: {fileID: 2006011341}
   m_Layer: 0
   m_Name: Experiment Manager
   m_TagString: Untagged
@@ -1710,6 +1839,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53ff46b4b2a497b4ebbb8bb52005c35e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExperimentConfig
+  mode: 1
   warmupTrials: 10
   trialsPerRound: 45
   roundsPerBlock: 4
@@ -1719,7 +1849,6 @@ MonoBehaviour:
   workspaceWidth: 0.25
   workspaceHeight: 0.2
   originPosition: {x: 0, y: 0}
-  useMouse: 1
   targetAngleDegrees: 0
   startKey: 32
   continueKey: 32
@@ -1736,6 +1865,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RobotController
   cursor: {fileID: 1241208992}
+  config: {fileID: 2006011335}
+  link: {fileID: 628809733}
+  remote: {fileID: 1246467733}
 --- !u!114 &2006011337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1797,6 +1929,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2006011341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2006011334}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 228402462e608be49bda18e875fca70e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fitts.Experiment.DisplayLogger
+  logEveryFrame: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1807,3 +1952,5 @@ SceneRoots:
   - {fileID: 1241208994}
   - {fileID: 531230397}
   - {fileID: 1563033202}
+  - {fileID: 628809735}
+  - {fileID: 1246467734}

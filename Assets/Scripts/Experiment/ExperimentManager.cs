@@ -76,23 +76,60 @@ public class ExperimentManager : MonoBehaviour
 
     void Start()
     {
+        /*
+         * AUTHORITY.
+         *
+         * In RobotM2 mode CORC owns the protocol: trial order, target onset, entry and dwell
+         * detection, every timing that enters the analysis, and the trial-by-trial log. This
+         * manager must not run at all, or two state machines would sequence trials against the
+         * same participant. RemoteExperimentController renders instead.
+         *
+         * Nothing measured in MouseSimulation mode is comparable to robot data: the mouse is
+         * sampled at frame rate, has no force feedback, and the movement time measured below is
+         * quantised to the frame period. Simulation mode is for piloting the display and the
+         * trial schedule only.
+         */
+        if (config == null)
+        {
+            Debug.LogError("ExperimentManager: no ExperimentConfig assigned.");
+            enabled = false;
+            return;
+        }
+
+        if (config.mode != ControlMode.MouseSimulation)
+        {
+            Debug.Log(
+                "ExperimentManager disabled: control mode is " + config.mode +
+                ". CORC sequences the protocol; RemoteExperimentController renders it."
+            );
+            enabled = false;
+            return;
+        }
+
         State = ExperimentState.Idle;
 
         currentTrialIndex = 0;
         currentRound = 0;
         completedTrials = 0;
 
+        /*
+         * The logger was previously declared but never opened, so simulation runs recorded
+         * nothing at all.
+         */
+        if (logger != null)
+            logger.StartNewFile();
+
         if (ui != null)
         {
             ui.HideRest();
 
-            ui.ShowState("READY");
+            ui.ShowState("READY (SIMULATION)");
             ui.ShowInstruction(
-                "Press SPACE to start the experiment."
+                "Mouse simulation. Press SPACE to start."
             );
         }
 
-        Debug.Log("Experiment Manager started.");
+        Debug.Log("Experiment Manager started in mouse simulation mode.");
     }
 
 
@@ -102,6 +139,13 @@ public class ExperimentManager : MonoBehaviour
 
     void Update()
     {
+        /*
+         * Belt and braces: Start() disables the component in robot mode, but a scene that
+         * re-enables it by hand must still not drive the protocol.
+         */
+        if (config == null || config.mode != ControlMode.MouseSimulation)
+            return;
+
         switch (State)
         {
             case ExperimentState.Idle:
@@ -594,8 +638,30 @@ public class ExperimentManager : MonoBehaviour
         /*
          * Safety check.
          */
-        if (currentTrialIndex >=
-            trialSequence.Count())
+        if (trialSequence.Count() <= 0)
+        {
+            Debug.LogError(
+                "No trials in TrialSequence."
+            );
+
+            return;
+        }
+
+        /*
+         * Warmup.csv holds one condition per ID (5 rows) while config.warmupTrials asks for 10
+         * reps, so the list has to be cycled: rep 6 re-presents condition 1. Previously the index
+         * ran off the end of the list and warm-up aborted after 5 trials with "No more trials".
+         *
+         * This mirrors warmup_repeats in CORC (warmupRepeats rounds, each covering every warm-up
+         * condition once, in increasing ID order).
+         */
+        int sequenceIndex = currentTrialIndex;
+
+        if (State == ExperimentState.Warmup)
+        {
+            sequenceIndex = currentTrialIndex % trialSequence.Count();
+        }
+        else if (currentTrialIndex >= trialSequence.Count())
         {
             Debug.LogError(
                 "No more trials in TrialSequence."
@@ -606,7 +672,7 @@ public class ExperimentManager : MonoBehaviour
 
         Trial trial =
             trialSequence.GetTrial(
-                currentTrialIndex
+                sequenceIndex
             );
 
         if (trial == null)
@@ -675,6 +741,24 @@ public class ExperimentManager : MonoBehaviour
 
         if (trial == null)
             return;
+
+        /*
+         * Record the trial. Simulation only: these movement times are sampled at frame rate and
+         * must not be pooled with, or compared to, the CORC measurements.
+         */
+        if (logger != null)
+        {
+            logger.LogTrial(
+                State.ToString(),
+                currentRound + 1,
+                trial,
+                trialManager.GetTargetPosition(),
+                trialManager.GetStartPosition(),
+                trialManager.GetEndPosition(),
+                trialManager.GetMovementTime(),
+                trialManager.GetError()
+            );
+        }
 
         completedTrials++;
 
