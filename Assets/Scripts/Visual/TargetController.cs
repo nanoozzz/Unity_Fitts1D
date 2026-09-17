@@ -8,6 +8,7 @@ public class TargetController : MonoBehaviour
 
     private float width;
     private Vector2 targetPosition;
+    private Color baseColour;
 
     void Awake()
     {
@@ -17,7 +18,21 @@ public class TargetController : MonoBehaviour
         if (targetCollider == null)
             targetCollider = GetComponent<CircleCollider2D>();
 
+        if (spriteRenderer != null)
+            baseColour = spriteRenderer.color;
+
         gameObject.SetActive(false);
+    }
+
+    public void SetColour(Color c) 
+    { 
+        if (spriteRenderer != null) 
+            spriteRenderer.color = c; 
+    }
+    public void ResetColour() 
+    { 
+        if (spriteRenderer != null) 
+            spriteRenderer.color = baseColour; 
     }
 
     public void SetTarget(Vector2 position, float W)

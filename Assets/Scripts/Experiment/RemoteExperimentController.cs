@@ -39,6 +39,10 @@ namespace Fitts.Experiment
         public KeyCode goKey = KeyCode.Space;
         public KeyCode abortKey = KeyCode.Escape;
 
+        [Header("Trial feedback")]
+        public Color hitColour = new Color(0.15f, 0.80f, 0.25f);
+        public Color missColour = new Color(0.45f, 0.45f, 0.45f);
+
         // Rest countdown: display only. CORC owns the real break timer and will move on regardless.
         private bool resting;
         private float restEndsAt;
@@ -50,6 +54,15 @@ namespace Fitts.Experiment
         void Awake()
         {
             if (link == null) link = FindFirstObjectByType<M2Link>();
+
+            if (dwellRing != null && target != null &&
+                (dwellRing == target.transform || target.transform.IsChildOf(dwellRing)))
+            {
+                Debug.LogError("[Remote] dwellRing points at the Target (or a parent of it). The dwell " +
+                               "indicator toggles its GameObject every frame, which would switch the target " +
+                               "off. Ignoring it — assign a separate sprite or leave the field empty.");
+                dwellRing = null;
+            }
         }
 
         void OnEnable()
@@ -222,27 +235,36 @@ namespace Fitts.Experiment
         private void HandleHit(int trialIndex, double mt, int nEntries, double xSelCm)
         {
             trialVisible = false;
-            if (target != null) target.Hide();
+            /*if (target != null) target.Hide();
             if (dwellRing != null) dwellRing.gameObject.SetActive(false);
             if (ui != null)
             {
                 ui.ShowTimer((float)mt);
                 ui.ShowInstruction("Good. Bring the handle back to the start.");
             }
+            displayLogger?.LogTrialOutcome(trialIndex, currentTrial, true, mt, nEntries, xSelCm);*/
+            if (target != null) target.SetColour(hitColour);   // stays visible
+            if (ui != null) { ui.ShowTimer((float)mt); ui.ShowInstruction("Hit — hold still."); }
             displayLogger?.LogTrialOutcome(trialIndex, currentTrial, true, mt, nEntries, xSelCm);
         }
 
         private void HandleMiss(int trialIndex)
         {
             trialVisible = false;
-            if (target != null) target.Hide();
+            /*if (target != null) target.Hide();
             if (dwellRing != null) dwellRing.gameObject.SetActive(false);
             if (ui != null) ui.ShowInstruction("Too slow - moving on.");
+            displayLogger?.LogTrialOutcome(trialIndex, currentTrial, false, double.NaN, 0, double.NaN);*/
+            if (target != null) target.SetColour(missColour);
+            if (ui != null) ui.ShowInstruction("Too slow.");
             displayLogger?.LogTrialOutcome(trialIndex, currentTrial, false, double.NaN, 0, double.NaN);
         }
 
         private void HandleReturn(Vector2 awayRobot)
         {
+            //if (ui != null) ui.ShowInstruction("Let the robot move the handle.");
+            trialVisible = false;
+            if (target != null) { target.Hide(); target.ResetColour(); }
             if (ui != null) ui.ShowInstruction("Let the robot move the handle.");
         }
 
